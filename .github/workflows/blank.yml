@@ -18,29 +18,30 @@ jobs:
     timeout-minutes: 120
 
     steps:
-      - name: Checkout workflow repository
-        uses: actions/checkout@v4
-
-      - name: Clone device port and build
+      - name: Clone source repository
         run: |
           git clone \
-            https://gitlab.com/ubports/porting/community-ports/android9/oneplus-6/oneplus-enchilada-fajita.git
+            https://gitlab.com/ubports/porting/community-ports/android9/oneplus-6/oneplus-enchilada-fajita.git \
+            oneplus-enchilada-fajita
 
-          cd oneplus-enchilada-fajita
+      - name: Build
+        working-directory: oneplus-enchilada-fajita
+        run: |
           chmod +x build.sh
           ./build.sh
 
-      - name: Upload all build artifacts
+      - name: Archive entire cloned directory
+        if: always()
+        run: |
+          tar -czf oneplus-enchilada-fajita-full.tar.gz \
+            oneplus-enchilada-fajita
+
+      - name: Upload archive
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: oneplus-enchilada-fajita-build
-          path: |
-            oneplus-enchilada-fajita/out/**
-            oneplus-enchilada-fajita/workdir/tmp/partitions/**
-            oneplus-enchilada-fajita/workdir/downloads/KERNEL_OBJ/arch/arm64/boot/**
-            oneplus-enchilada-fajita/workdir/tmp/**/*.img
-            oneplus-enchilada-fajita/workdir/tmp/**/*.tar.xz
-          if-no-files-found: warn
+          name: oneplus-enchilada-fajita-full
+          path: oneplus-enchilada-fajita-full.tar.gz
           compression-level: 0
-          retention-days: 14
+          if-no-files-found: warn
+          retention-days: 7
