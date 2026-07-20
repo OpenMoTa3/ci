@@ -33,4 +33,5 @@ jobs:
       - name: Run a multi-line script
         run: |
           git clone https://gitlab.com/ubports/porting/community-ports/android9/oneplus-6/oneplus-enchilada-fajita
-          cd oneplus-6/oneplus-enchilada-fajita
+          cd oneplus-enchilada-fajita
+          ./build.sh
